@@ -10,6 +10,7 @@ const symptomInput = document.querySelector('#sintomas');
 const form = document.querySelector('#nueva-cita');
 const quotesContainer = document.querySelector('#citas');
 
+let editing;
 
 //Objects
 const quote = {
@@ -34,6 +35,11 @@ class Quote {
     deleteQuote(id) {
         this.quotes = this.quotes.filter(quote => quote.id !== id);
     }
+
+    editQuote(currentQuote) {
+        this.quotes = this.quotes.map(quote => quote.id === currentQuote.id ? currentQuote : quote);
+    }
+
 }
 
 class UI {
@@ -84,6 +90,12 @@ class UI {
             deleteButton.innerHTML = 'Eliminar <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
             deleteButton.onclick = () => deleteQuote(id);
 
+            //Edit button
+            const editButton = document.createElement('button');
+            editButton.classList.add('btn', 'btn-info', 'mr-2');
+            editButton.innerHTML = 'Editar <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>'
+            editButton.onclick = () => editQuote(quote);
+
             //Add pet to divQuote
             divQuote.appendChild(petParagraph);
             divQuote.appendChild(ownerParagraph);
@@ -92,6 +104,7 @@ class UI {
             divQuote.appendChild(hourParagraph);
             divQuote.appendChild(symptomParagraph);
             divQuote.appendChild(deleteButton);
+            divQuote.appendChild(editButton);
 
             //Add pet to html
             quotesContainer.appendChild(divQuote);
@@ -136,14 +149,25 @@ const newQuote = (event) => {
         return;
     }
 
-    //Generate Quote id
-    quote.id = Date.now();
-    quotesManager.addQuote({ ...quote });
+    if (editing) {
+        ui.printAlert('Cita editada correctamente');
+
+        form.querySelector('button[type="submit"]').textContent = 'Crear cita';
+        quotesManager.editQuote({...quote});
+        //Desactivate editing
+        editing = false;
+    } else {
+        //Generate Quote id
+        quote.id = Date.now();
+        quotesManager.addQuote({ ...quote });
+        ui.printAlert('Cita agregada correctamente');
+    }
 
     restartQuote();
     form.reset();
 
     ui.printQuotes(quotesManager);
+
 }
 
 const deleteQuote = (id) => {
@@ -153,6 +177,28 @@ const deleteQuote = (id) => {
     ui.printAlert('Cita eliminada correctamente');
     //Delete quote from html
     ui.printQuotes(quotesManager);
+}
+
+const editQuote = ({ pet, owner, phone, date, hour, symptom, id }) => {
+    petInput.value = pet;
+    ownerInput.value = owner;
+    phoneInput.value = phone;
+    dateInput.value = date;
+    hourInput.value = hour;
+    symptomInput.value = symptom;
+
+    //Add to object
+    quote.id = id;
+    quote.pet = pet;
+    quote.owner = owner;
+    quote.phone = phone;
+    quote.date = date;
+    quote.hour = hour;
+    quote.symptom = symptom;
+
+    //Change button text
+    form.querySelector('button[type="submit"]').textContent = 'Guardar cambios';
+    editing = true;
 }
 
 const restartQuote = () => {
