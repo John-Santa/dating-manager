@@ -29,7 +29,10 @@ class Quote {
 
     addQuote(quote) {
         this.quotes = [...this.quotes, quote];
-        console.log('Cita agregada correctamente', this.quotes);
+    }
+
+    deleteQuote(id) {
+        this.quotes = this.quotes.filter(quote => quote.id !== id);
     }
 }
 
@@ -75,6 +78,12 @@ class UI {
             const symptomParagraph = document.createElement('p');
             symptomParagraph.innerHTML = `<span class="font-weight-bolder">Síntomas: </span>${symptom}`;
 
+            //Delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.classList.add('btn', 'btn-danger', 'mr-2');
+            deleteButton.innerHTML = 'Eliminar <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            deleteButton.onclick = () => deleteQuote(id);
+
             //Add pet to divQuote
             divQuote.appendChild(petParagraph);
             divQuote.appendChild(ownerParagraph);
@@ -82,6 +91,7 @@ class UI {
             divQuote.appendChild(dateParagraph);
             divQuote.appendChild(hourParagraph);
             divQuote.appendChild(symptomParagraph);
+            divQuote.appendChild(deleteButton);
 
             //Add pet to html
             quotesContainer.appendChild(divQuote);
@@ -113,7 +123,6 @@ const eventListeners = () => {
 //functions
 const dataQuote = (event) => {
     quote[event.target.name] = event.target.value;
-    console.log(quote);
 }
 
 const newQuote = (event) => {
@@ -137,6 +146,15 @@ const newQuote = (event) => {
     ui.printQuotes(quotesManager);
 }
 
+const deleteQuote = (id) => {
+    //Delete quote from array
+    quotesManager.deleteQuote(id);
+    //Menage UI
+    ui.printAlert('Cita eliminada correctamente');
+    //Delete quote from html
+    ui.printQuotes(quotesManager);
+}
+
 const restartQuote = () => {
     quote.pet = '';
     quote.owner = '';
@@ -145,6 +163,7 @@ const restartQuote = () => {
     quote.hour = '';
     quote.symptom = '';
 }
+
 
 
 
