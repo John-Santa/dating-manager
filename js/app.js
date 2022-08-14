@@ -21,6 +21,36 @@ const quote = {
     symptom: ''
 }
 
+//Classes
+class Quote {
+    constructor() {
+        this.quotes = [];
+    }
+
+    addQuote(quote) {
+        this.quotes = [...this.quotes, quote];
+        console.log('Cita agregada correctamente', this.quotes);
+    }
+}
+
+class UI {
+
+    printAlert(message, className = 'alert-success') {
+        const div = document.createElement('div');
+        div.classList.add('text-center', 'alert', 'd-block', 'col-12',className);
+        div.textContent = message;
+        const container = document.querySelector('#contenido');
+        const form = document.querySelector('.agregar-cita');
+        container.insertBefore(div, form);
+        setTimeout(() => {
+            document.querySelector('.alert').remove();
+        }, 5000);
+    }
+}
+
+const ui = new UI();
+const quotesManager = new Quote();
+
 //Events
 const eventListeners = () => {
     petInput.addEventListener('change', dataQuote);
@@ -29,16 +59,41 @@ const eventListeners = () => {
     dateInput.addEventListener('change', dataQuote);
     hourInput.addEventListener('change', dataQuote);
     symptomInput.addEventListener('change', dataQuote);
+
+    form.addEventListener('submit', newQuote);
 }
-
-//Classes
-
-
 
 //functions
 const dataQuote = (event) => {
     quote[event.target.name] = event.target.value;
     console.log(quote);
+}
+
+const newQuote = (event) => {
+    event.preventDefault();
+
+    const { pet, owner, phone, date, hour, symptom } = quote;
+
+    //validate
+    if (pet === '' || owner === '' || phone === '' || date === '' || hour === '' || symptom === '') {
+        ui.printAlert('Todos los campos son obligatorios', 'alert-danger');
+        return;
+    }
+
+    //Generate Quote id
+    quote.id = Date.now();
+    quotesManager.addQuote({ ...quote });
+    restartQuote();
+    form.reset();
+}
+
+const restartQuote = () => {
+    quote.pet = '';
+    quote.owner = '';
+    quote.phone = '';
+    quote.date = '';
+    quote.hour = '';
+    quote.symptom = '';
 }
 
 
