@@ -46,6 +46,53 @@ class UI {
             document.querySelector('.alert').remove();
         }, 5000);
     }
+
+    printQuotes({ quotes }) {
+        this.cleanHTML();
+
+        quotes.forEach(quote => {
+            const { pet, owner, phone, date, hour, symptom, id } = quote;
+            const divQuote = document.createElement('div');
+            divQuote.classList.add('cita', 'p-3');
+            divQuote.dataset.id = id;
+
+            const petParagraph = document.createElement('h2');
+            petParagraph.classList.add('card-title', 'font-weight-bolder');
+            petParagraph.textContent = pet;
+
+            const ownerParagraph = document.createElement('p');
+            ownerParagraph.innerHTML = `<span class="font-weight-bolder">Propietario: </span>${owner}`;
+
+            const phoneParagraph = document.createElement('p');
+            phoneParagraph.innerHTML = `<span class="font-weight-bolder">Teléfono: </span>${phone}`;
+
+            const dateParagraph = document.createElement('p');
+            dateParagraph.innerHTML = `<span class="font-weight-bolder">Fecha: </span>${date}`;
+
+            const hourParagraph = document.createElement('p');
+            hourParagraph.innerHTML = `<span class="font-weight-bolder">Hora: </span>${hour}`;
+
+            const symptomParagraph = document.createElement('p');
+            symptomParagraph.innerHTML = `<span class="font-weight-bolder">Síntomas: </span>${symptom}`;
+
+            //Add pet to divQuote
+            divQuote.appendChild(petParagraph);
+            divQuote.appendChild(ownerParagraph);
+            divQuote.appendChild(phoneParagraph);
+            divQuote.appendChild(dateParagraph);
+            divQuote.appendChild(hourParagraph);
+            divQuote.appendChild(symptomParagraph);
+
+            //Add pet to html
+            quotesContainer.appendChild(divQuote);
+        });
+    }
+
+    cleanHTML() {
+        while (quotesContainer.firstChild) {
+            quotesContainer.removeChild(quotesContainer.firstChild);
+        }
+    }
 }
 
 const ui = new UI();
@@ -83,8 +130,11 @@ const newQuote = (event) => {
     //Generate Quote id
     quote.id = Date.now();
     quotesManager.addQuote({ ...quote });
+
     restartQuote();
     form.reset();
+
+    ui.printQuotes(quotesManager);
 }
 
 const restartQuote = () => {
